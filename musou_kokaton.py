@@ -108,6 +108,10 @@ class Bird(pg.sprite.Sprite):
             if key_lst[k]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+        if key_lst[pg.K_LSHIFT]: # 左シフトが押下されたとき
+            self.speed = 20 # こうかとんのスピードを20にする
+        else:
+            self.speed = 10
         self.rect.move_ip(self.speed*sum_mv[0], self.speed*sum_mv[1])
         if check_bound(self.rect) != (True, True):
             self.rect.move_ip(-self.speed*sum_mv[0], -self.speed*sum_mv[1])
@@ -258,68 +262,6 @@ class Score:
     def update(self, screen: pg.Surface):
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
-    
-class NeoBeam:
-    """
-    一度に複数方向にビームを放つためのクラス
-    """
-    def __init__(self, bird: Bird, num: int = 5):
-        """
-        引数
-        bird : こうかとん
-        num  : 発射するビーム数
-        """
-        self.bird = bird
-        self.num = max(1, num)
-
-
-    def gen_beams(self) -> list[Beam]:
-        """
-        [-50°, +50°] を等間隔に self.num 本だけ生成して返す
-        """
-        beams = []
-        x = 100.0  # 度（-50 から +50 までの幅）
-        step = x / (self.num - 1)
-        angles = [] #ビームの角度のリスト
-        for i in range(-50, +51, int(step)):
-            angles.append(i)
-        
-        for a in angles: #格納されたビームの角度の数だけBeamインスタンスを作る
-            beam = Beam(self.bird, angle0=a)
-            beams.append(beam)
-        return beams
-            
-
-class Gravity(pg.sprite.Sprite):
-    """
-    画面全体を覆う重力場の発生するクラス
-    """
-
-    def __init__(self, life):
-        """
-        引数
-        life:重力場を発生させる時間
-        """
-        super().__init__()
-        self.life = life
-        self.image = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA).convert_alpha()
-        pg.draw.rect(self.image, (0, 0, 0, 150), (0, 0, WIDTH, HEIGHT))
-        self.rect = self.image.get_rect()
-
-    def update(self, bombs, emys, exps, score):
-        self.life -= 1
-        if self.life < 0:
-            self.kill()
-
-        hit_bombs = pg.sprite.spritecollide(self, bombs, True)
-        for bomb in hit_bombs:
-            exps.add(Explosion(bomb, 50))
-            score.value += 1
-
-        hit_enemies = pg.sprite.spritecollide(self, emys, True)
-        for emy in hit_enemies:
-            exps.add(Explosion(emy, 100))
-            score.value += 1
 
 
 def main():
