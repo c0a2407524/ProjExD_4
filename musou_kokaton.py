@@ -263,6 +263,34 @@ class Score:
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
 
+class NeoBeam:
+    """
+    一度に複数方向にビームを放つためのクラス
+    """
+    def __init__(self, bird: Bird, num: int = 5):
+        """
+        引数
+        bird : こうかとん
+        num  : 発射するビーム数
+        """
+        self.bird = bird
+        self.num = max(1, num)
+
+    def gen_beams(self) -> list[Beam]:
+        """
+        [-50°, +50°] を等間隔に self.num 本だけ生成して返す
+        """
+        beams = []
+        x = 100.0  # 度（-50 から +50 までの幅）
+        step = x / (self.num - 1)
+        angles = [] #ビームの角度のリスト
+        for i in range(-50, +51, int(step)):
+            angles.append(i)
+        
+        for a in angles: #格納されたビームの角度の数だけBeamインスタンスを作る
+            beam = Beam(self.bird, angle0=a)
+            beams.append(beam)
+        return beams
 
 def main():
     pg.display.set_caption("真！こうかとん無双")
@@ -333,7 +361,6 @@ def main():
             score.value -= 200
             gravities.add(Gravity(400))
            
-        bird.update(key_lst, screen)
         beams.update()
         beams.draw(screen)
         emys.update()
