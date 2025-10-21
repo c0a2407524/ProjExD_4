@@ -292,6 +292,7 @@ def main():
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
             if event.type == pg.KEYDOWN and event.key == pg.K_e and score.value >20:
+                score.value -= 20
                 EMP(emys,bombs,screen)
         screen.blit(bg_img, [0, 0])
 
