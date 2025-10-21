@@ -126,6 +126,7 @@ class Bomb(pg.sprite.Sprite):
         self.rect.centerx = emy.rect.centerx
         self.rect.centery = emy.rect.centery+emy.rect.height//2
         self.speed = 6
+        self.state = "active"
 
     def update(self):
         """
@@ -240,6 +241,31 @@ class Score:
     def update(self, screen: pg.Surface):
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
+class EMP:
+    def __init__(self, emys: pg.sprite.Group , bombs: pg.sprite.Group ,screen: pg.Surface):
+        for emy in emys:
+            emy.interval = math.inf
+            emy.image = pg.transform.laplacian(emy.image)
+        for bomb in bombs:
+            bomb.speed /= 2
+            bomb.state = "inactive"
+        
+        img = pg.Surface((WIDTH,HEIGHT))
+        rct = pg.draw.rect(img,(248,229,140),(0,0,WIDTH,HEIGHT))
+        screen.blit(img,rct)
+        img.set_alpha(128)
+        
+        pg.display.update()
+        time.sleep(0.05)
+
+
+
+
+
+    
+
+        
+
 
 
 def main():
@@ -248,11 +274,13 @@ def main():
     bg_img = pg.image.load(f"fig/pg_bg.jpg")
     score = Score()
 
+
     bird = Bird(3, (900, 400))
     bombs = pg.sprite.Group()
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+
 
     tmr = 0
     clock = pg.time.Clock()
@@ -263,6 +291,8 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if event.type == pg.KEYDOWN and event.key == pg.K_e and score.value <= 0:
+                EMP(emys,bombs,screen)
         screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
