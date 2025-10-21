@@ -273,9 +273,6 @@ class Gravity(pg.sprite.Sprite):
             score.value += 1
 
 
-        
-
-
 def main():
     pg.display.set_caption("真！こうかとん無双")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -287,8 +284,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
-    gravities = pg.sprite.Group()
-    
+    gravities = pg.sprite.Group() 
 
     tmr = 0
     clock = pg.time.Clock()
@@ -329,7 +325,6 @@ def main():
             score.value -= 200
             gravities.add(Gravity(400))
            
-
         bird.update(key_lst, screen)
         beams.update()
         beams.draw(screen)
