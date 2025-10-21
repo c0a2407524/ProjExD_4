@@ -292,6 +292,38 @@ class NeoBeam:
             beams.append(beam)
         return beams
 
+
+class Gravity(pg.sprite.Sprite):
+    """
+    画面全体を覆う重力場の発生するクラス
+    """
+
+    def __init__(self, life):
+        super().__init__()
+        self.life = life
+        self.image = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)
+        pg.draw.rect(self.image, (0, 0, 0, 150), (0, 0, WIDTH, HEIGHT))  # 半透明の黒
+        self.rect = self.image.get_rect()
+
+    def update(self, bombs, emys, exps, score):
+        # 時間経過で消滅
+        self.life -= 1
+        if self.life < 0:
+            self.kill()
+            return
+
+        hit_bombs = pg.sprite.spritecollide(self, bombs, True)
+        for bomb in hit_bombs:
+            exps.add(Explosion(bomb, 50))
+            score.value += 10
+
+        hit_enemies = pg.sprite.spritecollide(self, emys, True)
+        for emy in hit_enemies:
+            exps.add(Explosion(emy, 100))
+            score.value += 100
+
+
+
 def main():
     pg.display.set_caption("真！こうかとん無双")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -331,7 +363,7 @@ def main():
 
         for emy in pg.sprite.groupcollide(emys, beams, True, True).keys():  # ビームと衝突した敵機リスト
             exps.add(Explosion(emy, 100))  # 爆発エフェクト
-            score.value += 10  # 10点アップ
+            score.value += 100  # 10点アップ
             bird.change_img(6, screen)  # こうかとん喜びエフェクト
 
         for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():  # ビームと衝突した爆弾リスト
